@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reservation {
 	
 	private Integer roomNumber;
@@ -16,7 +18,11 @@ public class Reservation {
 		
 	}
 	
-	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) { //Lança exceção no construtor, trate as exceções no começo do metodo --> programação defensiva.
+		if (!checkOut.after(checkIn)) { // Se check-out não é depois do check-in
+			throw new DomainException("Check-out date must be after check-in date.");
+		}
+		
 		this.roomNumber = roomNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -43,18 +49,17 @@ public class Reservation {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS); // Converter o diff(milisegundos) para dias.
 	}
 
-	public String updateDates(Date checkIn, Date checkOut) { //atualização nas datas
-		Date now = new Date(); // SOLUÇÃO RUIM
+	public void updateDates(Date checkIn, Date checkOut) { //atualização nas datas //lança uma exceção dependendo do que acontecer dentro.
+		Date now = new Date(); // (SOLUÇÃO BOA)
 		if (checkIn.before(now) || checkOut.before(now)) { // Se check-in for anterior a agora ou check-out for anterior a agora
-				return "Reservation dates for update must be future dates.";
+			throw new DomainException("Reservation dates for update must be future dates."); //IllegalArgumentException --> Argumentos que passamos são invalidos.
 		}
 		if (!checkOut.after(checkIn)) { // Se check-out não é depois do check-in
-			return "Check-out date must be after check-in date.";
+			throw new DomainException("Check-out date must be after check-in date.");
 		}
 		
 		this.checkIn = checkIn; // recebe o novo argumento e substitui
 		this.checkOut = checkOut; // recebe o novo argumento e substitui
-		return null; // Se retorna null, não deu erro.
 	}
 	
 	@Override
