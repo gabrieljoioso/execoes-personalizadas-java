@@ -7,7 +7,7 @@ inválidos para a reserva, conforme as seguintes regras:
 - A data de saída deve ser maior que a data de entrada
 */
 
-// SOLUÇÃO 1 (MUITO RUIM)
+// SOLUÇÃO 2 (RUIM)
 
 package application;
 
@@ -46,16 +46,12 @@ public class Program {
 			System.out.print("Check-out date (dd/MM/yyyy): ");
 			checkOut = sdf.parse(sc.next()); // Reaproveitando no update
 			
-			Date now = new Date(); // SOLUÇÃO MUITO RUIM
-			if (checkIn.before(now) || checkOut.before(now)) { // Se check-in for anterior a agora ou check-out for anterior a agora
-				System.out.println("Error in reservation: Reservation dates for update must be future dates.");
-			}
-			else if (!checkOut.after(checkIn)) { // Se check-out não é depois do check-in
-				System.out.println("Error in reservation: Reservation dates for update must be future dates.");
+			String error = reservation.updateDates(checkIn, checkOut); // retorna string dizendo se houve erro.
+			if (error != null) { // se error for diferente de null, há uma string contendo erro.
+				System.out.println("Error in reservation: " + error);
 			}
 			else {
-				reservation.updateDates(checkIn, checkOut);
-				System.out.println("Reservation: " + reservation);
+			System.out.println("Reservation: " + reservation);
 			}			
 		}		
 		
